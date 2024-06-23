@@ -1,0 +1,33 @@
+---
+
+#- name: /var/lib/grafana/dashboards
+#  file:
+#    path: /var/lib/grafana/dashboards
+#    state: directory
+
+#- name: copy dashboard.yaml file
+#  copy:
+#    src: "files/dashboard.yaml"
+#    dest: /etc/grafana/provisioning/dashboards/
+
+#- name: copy node_exporter_dashboard.json file
+#  copy:
+#    src: "files/node_exporter_dashboard.json"
+#    dest: /var/lib/grafana/dashboards/
+
+#- name: copy datasource.yaml file
+#  copy:
+#    src: "files/datasource.yaml"
+#    dest: /etc/grafana/provisioning/datasources/
+
+- name: copy grafana.ini file
+  copy:
+    src: "files/grafana.ini"
+    dest: /etc/grafana/
+
+- name: copy ldap.toml file
+  copy:
+    src: "files/ldap.toml"
+    dest: /etc/grafana/
+
+    

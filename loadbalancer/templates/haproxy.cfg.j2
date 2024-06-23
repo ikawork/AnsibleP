@@ -1,0 +1,19 @@
+global
+    log stdout format raw local0
+
+defaults
+    log     global
+    mode    http
+    option  httplog
+    timeout connect 5000
+    timeout client  50000
+    timeout server  50000
+
+frontend http-in
+    bind *:80
+    default_backend webservers
+
+backend webservers
+    balance roundrobin
+    server node1 {{ 192.168.2.51 }}:80 check
+    server node2 {{ 192.168.2.52 }}:80 check

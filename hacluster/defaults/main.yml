@@ -1,0 +1,7 @@
+---
+# defaults file for hacluster
+base_packages:
+  - pacemaker
+  - corosync
+  - pcs
+  - resource-agents

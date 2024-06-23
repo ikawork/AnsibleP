@@ -1,0 +1,48 @@
+---
+# tasks file for node-exporter
+
+- name: Download node-exporter zip arch
+  get_url:
+    url: https://github.com/prometheus/node_exporter/releases/download/v1.8.0/node_exporter-1.8.0.linux-amd64.tar.gz
+    dest: "{{ ansible_env.HOME }}/node_exporter-1.8.0.linux-amd64.tar.gz"
+
+- name: extract node-exporter zip arch
+  unarchive:
+    src: "{{ ansible_env.HOME }}/node_exporter-1.8.0.linux-amd64.tar.gz"
+    dest: "{{ ansible_env.HOME }}"
+    remote_src: yes
+
+- name: copy prometheus bin files
+  copy:
+    src: "{{ ansible_env.HOME }}/node_exporter-1.8.0.linux-amd64/{{ item }}"
+    dest: /usr/local/bin/
+    remote_src: yes
+    mode: preserve
+  with_items:
+    - node_exporter
+
+- name: generate node-exporter service file
+  template:
+    src: templates/node_exporter.service.j2
+    dest: /etc/systemd/system/node_exporter.service
+  notify:
+    - daemon reload
+
+- name: start/enable node-exporter
+  systemd:
+    name: node_exporter
+    state: started
+    enabled: yes
+
+- name: configure prometheus
+  template:
+    src: templates/prometheus.yml.j2
+    dest: /etc/prometheus/prometheus.yml
+  notify:
+    - reload prometheus
+
+- name: start/enable prometheus
+  systemd:
+    name: prometheus
+    state: started
+    enabled: yes

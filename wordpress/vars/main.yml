@@ -1,0 +1,7 @@
+---
+# vars file for wordpress
+main:
+  - source: "files/.env"
+    destination: "myweb"
+  - source: "files/docker-compose.yml"
+    destination: "/root/myweb"

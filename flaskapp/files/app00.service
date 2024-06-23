@@ -1,0 +1,11 @@
+[Unit]
+Description=Gunicorn Server
+After=network-online.target
+
+[Service]
+WorkingDirectory=/home/vagrant/flask-app00
+Environment="PATH=/root/env/ika/bin"
+ExecStart=/root/env/ika/bin/gunicorn --workers 3 --bind unix:app00.sock -m 007 wsgi:app
+
+[Install]
+WantedBy=multi-user.target

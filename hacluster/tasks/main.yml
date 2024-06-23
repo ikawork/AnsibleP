@@ -1,0 +1,7 @@
+---
+
+- name:
+  include_tasks: "pp.yml"
+
+- name:
+  include_tasks: "hacluster.yml"

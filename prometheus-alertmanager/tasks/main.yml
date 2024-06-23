@@ -1,0 +1,28 @@
+---
+# tasks file for prometheus-alertmanager
+
+#- name:
+#  include_tasks: "prometheusinstall.yml"
+
+- name:
+  include_tasks: "alert-managerinstall.yml"
+
+
+- name: Restart NGINX service
+  service:
+    name: nginx
+    state: restarted
+
+- name: Restart alert-manager
+  systemd:
+    name: alertmanager
+    state: restarted
+
+- name: daemon reload
+  systemd:
+    daemon_reload: yes
+
+- name: restart prometheus
+  systemd:
+    name: prometheus
+    state: restarted

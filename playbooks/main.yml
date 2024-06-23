@@ -1,0 +1,13 @@
+---
+- hosts: web1
+  roles:
+#    - base-packages
+
+
+
+
+   
+
+
+    
+

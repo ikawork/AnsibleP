@@ -1,0 +1,49 @@
+---
+# tasks file for nginx
+
+- name: Install the prerequisites
+  apt:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - ca-certificates
+    - curl
+    - gnupg2
+    - lsb-release
+    - ubuntu-keyring
+
+- name: Import an official nginx signing key so apt could verify the packages authenticity
+  shell:
+    cmd: "curl https://nginx.org/keys/nginx_signing.key | gpg --dearmor \
+         | sudo tee /usr/share/keyrings/nginx-archive-keyring.gpg >/dev/null"
+  register: command_output
+
+- name: Verify that the downloaded file contains the proper key
+  shell:
+    cmd: "gpg --dry-run --quiet --no-keyring --import --import-options import-show /usr/share/keyrings/nginx-archive-keyring.gpg"
+  register: command_output
+
+- name:
+  include_tasks: "nginxaptrepository.yml"
+
+- name: Install Nginx
+  apt:
+    name: nginx
+    state: latest
+    update_cache: yes
+
+- name: Ensure Nginx is started and enabled
+  systemd:
+    name: nginx
+    state: started
+    enabled: yes
+
+- name: Update 
+  apt:
+    update_cache: yes
+
+- name: Display Nginx status
+  shell:
+    cmd: "sudo systemctl status nginx"
+  register: command_output
+

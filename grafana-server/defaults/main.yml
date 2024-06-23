@@ -1,0 +1,26 @@
+---
+# defaults file for grafana-server
+
+base_packages:
+  - apt-transport-https
+  - software-properties-common
+  - wget
+
+prometheus_jobs:
+  - name: prometheus
+    scrape_interval: 15s
+    port: 9090
+    targets:
+      - "{{ inventory_hostname }}"
+  - name: node_exporter
+    scrape_interval: 15s
+    port: 9100
+    targets:
+      - "{{ groups['all'] }}"
+
+prometheus_retention_time: 30d
+prometheus_external_url: https://example.com
+
+prometheus_scrape_interval: 30s
+prometheus_scrape_timeout: 30s
+  

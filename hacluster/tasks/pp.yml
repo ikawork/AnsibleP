@@ -1,0 +1,56 @@
+---
+# tasks file for hacluster
+- name: update
+  apt:
+    update_cache: yes
+
+- name: Upgrade APT packages
+  apt:
+    upgrade: safe
+
+- name: install package
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items: "{{ base_packages }}"
+
+- name: Enable pcsd
+  shell:
+    cmd: "systemctl enable pcsd"
+  register: command_output
+
+- name: Enable pcsd
+  shell:
+    cmd: "systemctl enable pcsd --now"
+  register: command_output
+
+- name: status pcsd
+  shell:
+    cmd: "systemctl status pcsd"
+  register: command_output
+
+- name: Start corosync pacemaker
+  shell:
+    cmd: "systemctl start corosync pacemaker"
+  register: command_output
+
+- name: Enable corosync pacemaker
+  shell:
+    cmd: "systemctl enable corosync pacemaker"
+  register: command_output
+
+- name: Status corosync pacemaker
+  shell:
+    cmd: "systemctl status corosync pacemaker"
+  register: command_output
+
+- name: Input in hacluster password
+  shell:
+    cmd: "echo 'hacluster:paroli1234' | chpasswd"
+  register: command_output
+
+- name: Input in hacluster password
+  shell:
+    cmd: "pcs host auth 192.168.2.51 192.168.2.52"
+  register: command_output
+

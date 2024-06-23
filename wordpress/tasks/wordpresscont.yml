@@ -1,0 +1,32 @@
+---
+- name: update apt
+  apt:
+    update_cache: yes
+
+- name: Create dir
+  file:
+    path: "/root/{{ item }}"
+    state: directory
+  with_items:
+    - myweb
+
+- name: copy files
+  copy:
+    src: "{{ item.source }}"
+    dest: "{{ item.destination }}"
+  loop: "{{ main }}"
+
+- name: start docker
+  service:
+    name: docker
+    state: started
+    enabled: yes
+
+- name: move to project folder and docker compose
+  command:
+    cmd: docker compose up -d
+    chdir: /root/myweb/
+  register: command_output
+
+
+

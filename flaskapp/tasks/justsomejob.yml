@@ -1,0 +1,82 @@
+---
+
+#- name: chmod 
+#  shell:
+#    cmd: "chmod 775 /home/vagrant/"
+#  register: command_output
+
+#- name: git is installed
+#  apt:
+#    name: git
+#    state: present
+
+#- name: git clone . public git project
+#  git:
+#    repo: "https://github.com/ikawork/Backend-Nodejs-DP"
+#    dest: "/home/vagrant/flask-app00"
+
+- name: copy .env paste
+  copy:
+    src: "files/.env"
+    dest: "/home/vagrant/flask-app00/"
+
+- name: copy app00.service paste
+  copy:
+    src: "files/app00.service"
+    dest: "/etc/systemd/system/"
+  
+- name: daemon reload
+  systemd:
+    daemon_reload: yes
+
+- name: start app
+  shell:
+    cmd: "systemctl start app00"
+  register: command_output
+
+- name: enable app
+  shell:
+    cmd: "systemctl enable app00"
+  register: command_output
+
+- name: copy app.conf paste
+  copy:
+    src: "files/app00.conf"
+    dest: "/etc/nginx/sites-available/"
+  notify: 
+    - daemon reload
+
+#- name: enable app
+#  shell:
+#    cmd: "ln -s /etc/nginx/sites-available/app00.conf /etc/nginx/sites-enabled/app00.conf"
+#  register: command_output
+#  notify: 
+#    - daemon reload
+
+
+- name: restart nginx
+  service:
+    name: nginx
+    state: restarted
+
+#- name: ufw enable
+#  shell:
+#    cmd: "ufw enable"
+#  register: command_outputs
+
+
+#- name: delete allow 5000
+#  shell:
+#    cmd: "ufw delete allow 5000"
+#  register: command_outputs
+
+
+- name: ufw 
+  shell:
+    cmd: "ufw allow 82/tcp"
+  register: command_outputs
+
+- name: ufw 
+  shell:
+    cmd: "ufw allow 'Nginx Full'"
+  register: command_output

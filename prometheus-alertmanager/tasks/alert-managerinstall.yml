@@ -1,0 +1,67 @@
+---
+# tasks file for alert-manager
+
+- name: Download alert-manager zip arch
+  get_url:
+    url: https://github.com/prometheus/alertmanager/releases/download/v0.27.0/alertmanager-0.27.0.linux-amd64.tar.gz
+    dest: "{{ ansible_env.HOME }}/alertmanager-0.27.0.linux-amd64.tar.gz"
+
+- name: extract alert-manager zip arch
+  unarchive:
+    src: "{{ ansible_env.HOME }}/alertmanager-0.27.0.linux-amd64.tar.gz"
+    dest: "{{ ansible_env.HOME }}"
+    remote_src: yes
+
+- name: copy alert-manager bin files
+  copy:
+    src: "{{ ansible_env.HOME }}/alertmanager-0.27.0.linux-amd64/{{ item }}"
+    dest: /usr/local/bin/
+    remote_src: yes
+    mode: preserve
+  with_items:
+    - alertmanager
+    - amtool
+  notify:
+    - restart prometheus
+
+- name: create alert-manager directories
+  file:
+    path: "{{ item }}"
+    state: directory
+  with_items:
+    - /etc/alertmanager
+    - /var/lib/alertmanager
+
+- name: copy alert-manager config files
+  copy:
+    src: "{{ ansible_env.HOME }}/alertmanager-0.27.0.linux-amd64/{{ item }}"
+    dest: /etc/alertmanager/
+    remote_src: yes
+    mode: preserve
+  with_items:
+    - alertmanager.yml
+
+- name: generate alert-manager service file
+  template:
+    src: templates/alertmanager.service.j2
+    dest: /etc/systemd/system/alertmanager.service
+  notify:
+    - daemon reload
+    - restart prometheus
+
+- name: copy file paste
+  copy:
+    src: "files/alertmanager.conf"
+    dest: "/etc/nginx/conf.d/"
+
+- name: start/enable alert-manager
+  systemd:
+    name: alertmanager
+    state: started
+    enabled: yes
+
+- name: start/enable prometheus
+  systemd:
+    name: prometheus
+    state: started
+    enabled: yes

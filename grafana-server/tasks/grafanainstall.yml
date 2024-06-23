@@ -1,0 +1,50 @@
+---
+
+- name: install package
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items: "{{ base_packages }}"
+
+- name:
+  include_tasks: "grafanagpgkey.yml"
+
+- name: To add a repository for stable releases
+  shell:
+    cmd: echo "deb [signed-by=/etc/apt/keyrings/grafana.gpg] https://apt.grafana.com stable main" | sudo tee -a /etc/apt/sources.list.d/grafana.list
+  register: command_output
+
+- name: Update 
+  apt:
+    update_cache: yes
+
+- name: Install Grafana
+  apt:
+    name: grafana
+    state: latest
+    update_cache: yes
+
+- name: copy grafana.conf paste
+  copy:
+    src: "files/grafana.conf"
+    dest: "/etc/nginx/conf.d/"
+
+- name: Reload the systemd manager configuration
+  command:
+    cmd: /bin/systemctl daemon-reload
+
+- name: Enable the Grafana server to start at boot
+  systemd:
+    name: grafana-server
+    enabled: yes
+
+- name: Start the Grafana server
+  systemd:
+    name: grafana-server
+    state: started
+
+- name: Ensure Grafana server is running
+  systemd:
+    name: grafana-server
+    state: started
+

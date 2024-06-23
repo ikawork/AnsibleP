@@ -1,0 +1,40 @@
+---
+- name: update apt
+  apt:
+    update_cache: yes
+
+- name: install packages
+  apt:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - ca-certificates
+    - curl
+
+- name: add Docker GPG key
+  apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    keyring: /etc/apt/trusted.gpg.d/docker.gpg
+    state: present
+
+- name: add Docker repository
+  apt_repository:
+    repo: deb [arch=amd64 signed-by=/etc/apt/trusted.gpg.d/docker.gpg] https://download.docker.com/linux/ubuntu jammy stable
+    state: present
+
+- name: install Docker
+  apt:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - docker-ce
+    - docker-ce-cli
+    - containerd.io
+    - docker-buildx-plugin
+    - docker-compose-plugin
+    - docker-compose
+  notify: start docker service
+
+- name: update apt again
+  apt:
+    update_cache: yes

@@ -1,0 +1,30 @@
+---
+- name: setup hacluster
+  shell:
+    cmd: "pcs cluster setup hacluster 192.168.2.51 192.168.2.52 --force"
+  register: command_output
+
+- name: cluster start
+  shell:
+    cmd: "pcs cluster start --all"
+  register: command_output
+
+- name: cluster enable
+  shell:
+    cmd: "pcs cluster enable --all"
+  register: command_output
+
+- name: set stonith
+  shell:
+    cmd: "pcs property set stonith-enabled=false"
+  register: command_output
+
+- name: set no-quorum
+  shell:
+    cmd: "pcs property set no-quorum-policy=ignore"
+  register: command_output
+
+- name: create virtual_ip
+  shell:
+    cmd: "pcs resource create virtual_ip ocf:heartbeat:IPaddr2 ip=192.168.77.54 cidr_netmask=32 op monitor interval=30s"
+  register: command_output

@@ -1,0 +1,13 @@
+---
+# tasks file for webserver
+- name: Install Nginx
+  apt:
+    name: nginx
+    state: latest
+    update_cache: yes
+
+- name: Ensure Nginx is started and enabled
+  systemd:
+    name: nginx
+    state: started
+    enabled: yes

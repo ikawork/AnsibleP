@@ -1,0 +1,22 @@
+---
+
+- name: Ensure the apt-transport-https package is installed
+  apt:
+    name: apt-transport-https
+    state: present
+
+- name: Add the Nginx GPG key
+  apt_key:
+    url: https://nginx.org/keys/nginx_signing.key
+    state: present
+    keyring: /usr/share/keyrings/nginx-archive-keyring.gpg
+
+- name: Add the Nginx apt repository
+  apt_repository:
+    repo: "deb [signed-by=/usr/share/keyrings/nginx-archive-keyring.gpg] http://nginx.org/packages/ubuntu {{ ansible_distribution_release }} nginx"
+    filename: nginx
+
+- name: Update the apt package index
+  apt:
+    update_cache: yes
+
